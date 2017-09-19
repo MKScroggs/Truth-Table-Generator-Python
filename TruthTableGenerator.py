@@ -4,6 +4,7 @@ from tkinter import Tk, Button, Entry, E, W, N, S, INSERT, PhotoImage, Menu
 from tkinter import StringVar
 
 
+
 def insert_text(field, text):
     field.insert(INSERT, text)
     return
@@ -115,7 +116,6 @@ class TruthTableGeneratorGUI:
         master.columnconfigure(4, weight=1)
 
 
-
 if __name__ == "__main__":
     root = Tk()
     # root.resizable(width=False, height=False)
@@ -128,4 +128,3 @@ if __name__ == "__main__":
 
     # start the main loop
     root.mainloop()
-    
