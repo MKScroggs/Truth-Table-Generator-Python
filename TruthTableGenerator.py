@@ -1,7 +1,7 @@
 import sys
 import os
 from tkinter import Tk, Button, Entry, E, W, N, S, INSERT, PhotoImage, Menu, \
-    StringVar, Label, Frame, Canvas, GROOVE
+    StringVar, Frame, Canvas, GROOVE
 from AutoScrollBar import AutoScrollbar
 program_directory = sys.path[0]
 
@@ -11,7 +11,6 @@ def insert_text(field, text):
     return
 
 
-    
 def validate(text):
     raise Exception("Input recieved: {}".format(text))
 
