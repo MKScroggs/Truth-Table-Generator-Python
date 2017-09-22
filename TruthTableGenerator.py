@@ -1,22 +1,17 @@
 import sys
 import os
 from tkinter import Tk, Button, Entry, E, W, N, S, INSERT, PhotoImage, Menu, \
-    StringVar, Frame, Canvas, GROOVE
+    StringVar, Frame, Canvas, GROOVE, messagebox
 from AutoScrollBar import AutoScrollbar
+import StringValidation as SV
 program_directory = sys.path[0]
+
+about_info = "Version 0.1 \nAuthor: McAllister Scroggs"
 
 
 def insert_text(field, text):
     field.insert(INSERT, text)
     return
-
-
-def validate(text):
-    raise Exception("Input recieved: {}".format(text))
-
-
-def test():
-    print("This is a test?!?!?")
 
 
 class TruthTableGeneratorGUI:
@@ -25,6 +20,7 @@ class TruthTableGeneratorGUI:
         root.title("Truth Table Generator")
         root.iconphoto(True, PhotoImage(file=os.path.join(program_directory,
                                                           "icon.png")))
+        root.minsize(400, 400)
 
         # create a menu bar
         menubar = Menu(root)
@@ -35,13 +31,13 @@ class TruthTableGeneratorGUI:
 
         # create the help menu
         helpmenu = Menu(menubar, tearoff=0)
-        helpmenu.add_command(label="Help", command=test)
-        helpmenu.add_command(label="About", command=test)
+        helpmenu.add_command(label="Help", command=root.quit)
+        helpmenu.add_command(label="About", command=lambda:
+                             messagebox.showinfo("About", about_info))
 
         # attach the menus to the menu bar
         menubar.add_cascade(label="File", menu=filemenu)
         menubar.add_cascade(label="Help", menu=helpmenu)
-        menubar.add_command(label="test", command=test)
 
         root.config(menu=menubar)
 
@@ -71,7 +67,9 @@ class TruthTableGeneratorGUI:
 
         # declaring and defining widgets
         sv = StringVar()
-        sv.trace("w", lambda name, index, mode, sv=sv: generate(sv))
+        sv.trace("w", lambda name, index, mode,
+                 sv=sv: self.generate_table(False))
+        
         self.entry = Entry(root, textvariable=sv)
 
         self.p_button = Button(root, text="p", width=1,
@@ -109,7 +107,8 @@ class TruthTableGeneratorGUI:
                                                              ' <-> '))
 
         self.generate_button = Button(root, text="GO!",
-                                      command=self.generate_table)
+                                      command=lambda:
+                                      self.generate_table(True))
 
         # adding widgets to the grid
         self.p_button.grid(row=1, column=0, sticky=E+W+N+S)
@@ -130,7 +129,20 @@ class TruthTableGeneratorGUI:
         root.grid_columnconfigure(3, weight=1)
         root.grid_columnconfigure(4, weight=1)
 
-    def generate_table(self):
+    def generate_table(self, show_message):
+        # convert the entered string into a standard format
+        expression = SV.parse(self.entry.get())
+        # validate that the expression is consistant with the rules
+        valid = SV.validate(expression)  # valid is (True/False, message)
+        if valid[0]:
+            # generate table
+            pass
+        else:
+            if show_message:
+                messagebox.showinfo("Error", valid[1])
+                # make popup
+
+    def draw_table(self):
         # clear the canvas of past tables
         self.tablecanvas.delete("all")
 
