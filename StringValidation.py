@@ -1,20 +1,21 @@
 import re
 
+replacements = (
+    (r"\bif and only if\b", "@"),
+    (r"\band\b" , "*"),
+    (r"\bor\b", "+"),
+    (r"\bnot\b", "~"),
+    (r"\bif\b", ">"),
+    (r"\biff\b","@")
+    )
+
 
 def parse(string):
     print("Parsing {}".format(string))
+    for replacement in replacements:
+        string = re.sub(replacement[0], replacement[1], string)
 
-    # define the changes to be made
-    replace = {
-        r'\band\b': "*"}
-
-    replace = dict((k, v) for k, v in replace.items())
-    pattern = re.compile("|".join(replace.keys()))
-    print(replace.get(m.group(0)))
-    replaced_string = pattern.sub(lambda m: replace.get(m.group(0)),
-                                  string)
-
-    print("new string: {}".format(replaced_string))
+    print("new string: {}".format(string))
     return [string]
 
 
