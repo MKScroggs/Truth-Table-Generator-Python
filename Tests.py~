@@ -1,0 +1,14 @@
+import unittest
+import StringValidation as SV
+
+
+def class ControllerTests(unittest.TestCase):
+
+    def test_and_replacement(self):
+        assert.Equals(SV.standardize_string('and'), '*')
+        assert.Equals(SV.standardize_string(' and '), ' * ')
+        assert.Equals(SV.standardize_string('land'), 'land')
+        assert.Equals(SV.standardize_string('andy'), 'andy')
+
+if name == '__main__':
+    unittest.main()
