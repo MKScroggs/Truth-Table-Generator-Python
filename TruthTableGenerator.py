@@ -131,7 +131,8 @@ class TruthTableGeneratorGUI:
 
     def generate_table(self, show_message):
         # convert the entered string into a standard format
-        expression = SV.parse(self.entry.get())
+        expression = self.entry.get()
+        print("Expression: {}".format(expression))
         # validate that the expression is consistant with the rules
         valid = SV.validate(expression)  # valid is (True/False, message)
         if valid[0]:
@@ -151,7 +152,7 @@ class TruthTableGeneratorGUI:
         frame.rowconfigure(0, weight=1)
         frame.columnconfigure(0, weight=1)
 
-        # PLACE HOLDER FOR REAL TABLE GENERATION
+        # PACE HOLDER FOR REAL TABLE GENERATION
         for i in range(25):
             Button(frame, text=i).grid(row=i, column=i)
 

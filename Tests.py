@@ -4,6 +4,22 @@ import StringValidation as SV
 
 class ControllerTests(unittest.TestCase):
 
+    def test_has_invalid_chars(self):
+        with self.subTest():
+            self.assertEqual(SV.contains_invalid_chars('&'), '&')
+        with self.subTest():
+            self.assertIsNone(SV.contains_invalid_chars('a + b'))
+        with self.subTest():
+            self.assertIsNone(SV.contains_invalid_chars('a * b'))
+        with self.subTest():
+            self.assertIsNone(SV.contains_invalid_chars('a > b'))
+        with self.subTest():
+            self.assertIsNone(SV.contains_invalid_chars('a = b'))
+        with self.subTest():
+            self.assertIsNone(SV.contains_invalid_chars('~ b'))
+        with self.subTest():
+            self.assertIsNone(SV.contains_invalid_chars('( b )'))  
+ 
     def test_and_replacement(self):
         with self.subTest():
             self.assertEqual(SV.standardize_string('a and b'), 'a * b')
