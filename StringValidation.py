@@ -27,10 +27,21 @@ replacements = (
     (r' +$', '')
     )
 
+invalid_preceeding_binary = ('+', '*', '>', '=', '(', None)
+invalid_following_binary = ('+', '*', '>', '=', ')', None)
+invalid_preceeding_unary = (')')
+invalid_following_unary = ('+', '*', '>', '=', ')', None)
+invalid_preceeding_open = (')', 'true', 'false', 'VAR')
+invalid_following_open = (')', '+', '*', '>', '=', None)
+invalid_preceeding_close = ('(', '+', '*', '>', '=', '~', None)
+invalid_following_close = ('(', '!', 'true', 'false', 'VAR')
+invalid_preceeding_var = (')', 'true', 'false', 'VAR', None)
+invalid_following_var = ('(', '~', 'true', 'false', 'VAR')
+
 
 def standardize_string(expression):
     """
-    Converts all symbols to uniform version (*+>=~) ensures spacing around 
+    Converts all symbols to uniform version (*+>=~) ensures spacing around
     words and operators
     """
     expression = expression.lower()
@@ -48,11 +59,33 @@ def has_invalid_chars(expression):
     else:
         return None
 
-def validate_binary_operator(proceeding, following):
-    invalid_preceeding = {'+', '*', '>', '=', '('}
-    invalid_following = {'+', '*', '>', '=', ')'}
 
-def has_invalid_neighbors(preceeding, current, following):
+def var_to_placeholder(string):
+    '''
+    Takes an input string and determines if it is a variable or not. If not,
+    the string is returned. If it is, 'VAR' is returned.
+    '''
+    non_vars = {'+', '*', '~', '>', '=', '(', ')', 'true', 'false', None}
+    if non_vars.contains(string):
+        return string
+    else:
+        return 'VAR'
+
+    '''
+    yes these are all more or less the same function, but it seems easier to
+    add new functions when they are grouped like this.
+    '''
+def validate_binary_operator(preceeding, following):
+    if invalid_preceeding.contains(preceeding):
+        return (False, 'Binary operator preceeded by "{}"'.format(preceeding))
+    elif invalid_following.conatins(following):
+        return (False, 'Binary operator followed by "{}"'.format(following))
+    else:
+        return (True, 'Valid')
+
+
+def validate_neighbors(preceeding, current, following):
+    
 
 def validate(expression):
     """
