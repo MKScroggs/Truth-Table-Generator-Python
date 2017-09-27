@@ -27,6 +27,9 @@ replacements = (
     (r' +$', '')
     )
 
+binary_operators = ('+', '*', '>', '=')
+unary_operators = ('~')
+
 invalid_preceeding_binary = ('+', '*', '>', '=', '(', None)
 invalid_following_binary = ('+', '*', '>', '=', ')', None)
 invalid_preceeding_unary = (')')
@@ -71,26 +74,44 @@ def var_to_placeholder(string):
     else:
         return 'VAR'
 
-    '''
-    yes these are all more or less the same function, but it seems easier to
-    add new functions when they are grouped like this.
-    '''
-def validate_binary_operator(preceeding, following):
-    if invalid_preceeding.contains(preceeding):
-        return (False, 'Binary operator preceeded by "{}"'.format(preceeding))
-    elif invalid_following.conatins(following):
-        return (False, 'Binary operator followed by "{}"'.format(following))
+
+def validate_neighbors(preceeding, current, following):
+    invalid_preceeding = ()
+    invalid_following = ()
+
+    # determine what to use based on what we are looking at
+    if current in binary_operators:
+        invalid_preceeding = invalid_preceeding_binary
+        invalid_following = invalid_following_binary
+    elif current in unary_operators:
+        invalid_preceeding = invalid_preceeding_unary
+        invalid_following = invalid_following_unary
+    elif current in ('('):
+        invalid_preceeding = invalid_preceeding_open
+        invalid_following = invalid_following_open
+    elif current in (')'):
+        invalid_preceeding = invalid_preceeding_close
+        invalid_following = invalid_following_close
+    elif current == 'VAR':
+        invalid_preceeding = invalid_preceeding_var
+        invalid_following = invalid_following_var
+    else:
+        #  how did we get here?
+        raise Exception('Non valid symbol "{}" given to  \
+                         validate_neighbors'.format(current))
+
+    if preceeding in invalid_preceeding:
+        return (False, '"{}" preceeded by "{}"'.format(current, preceeding))
+    elif following in invalid_following:
+        return (False, '"{}" followed by "{}"'.format(current, following))
     else:
         return (True, 'Valid')
 
 
-def validate_neighbors(preceeding, current, following):
-    
-
 def validate(expression):
     """
     Validates an expression. If the expression is valid, it is formatted and
-    returned as a list of parts. 
+    returned as a list of parts.
     If invalid a message detailing the error is returned for dispay.
     
     Args:

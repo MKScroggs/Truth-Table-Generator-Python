@@ -18,8 +18,8 @@ class ControllerTests(unittest.TestCase):
         with self.subTest():
             self.assertIsNone(SV.contains_invalid_chars('~ b'))
         with self.subTest():
-            self.assertIsNone(SV.contains_invalid_chars('( b )'))  
- 
+            self.assertIsNone(SV.contains_invalid_chars('( b )'))
+
     def test_and_replacement(self):
         with self.subTest():
             self.assertEqual(SV.standardize_string('a and b'), 'a * b')
