@@ -4,6 +4,64 @@ import StringValidation as SV
 
 class ControllerTests(unittest.TestCase):
 
+    def test_var_to_placeholder(self):
+        with self.subTest():
+            self.assertEqual(SV.var_to_placeholder('+'), '+')
+        with self.subTest():
+            self.assertEqual(SV.var_to_placeholder('*'), '*')
+        with self.subTest():
+            self.assertEqual(SV.var_to_placeholder('~'), '~')
+        with self.subTest():
+            self.assertEqual(SV.var_to_placeholder('>'), '>')
+        with self.subTest():
+            self.assertEqual(SV.var_to_placeholder('='), '=')
+        with self.subTest():
+            self.assertEqual(SV.var_to_placeholder('('), '(')
+        with self.subTest():
+            self.assertEqual(SV.var_to_placeholder(')'), ')')
+        with self.subTest():
+            self.assertEqual(SV.var_to_placeholder('true'), 'true')
+        with self.subTest():
+            self.assertEqual(SV.var_to_placeholder('false'), 'false')
+        with self.subTest():
+            self.assertIsNone(SV.var_to_placeholder(None))
+        with self.subTest():
+            self.assertEqual(SV.var_to_placeholder('p'), 'p')
+        with self.subTest():
+            self.assertEqual(SV.var_to_placeholder('q'), 'q')
+        with self.subTest():
+            self.assertEqual(SV.var_to_placeholder('andorvar'), 'andorvar')
+
+    def test_validate_neighbors(self):
+        # cases with none
+        with self.subTest():
+            self.assertTrue(SV.validate_neighbors(None, 'p', '+')[0])
+        with self.subTest():
+            self.assertTrue(SV.validate_neighbors(None, '~', 'p')[0])
+        with self.subTest():
+            self.assertTrue(SV.validate_neighbors(None, '(', 'p')[0])
+        with self.subTest():
+            self.assertTrue(SV.validate_neighbors('*', 'p', None)[0])
+        with self.subTest():
+            self.assertTrue(SV.validate_neighbors('~', 'p', None)[0])
+        with self.subTest():
+            self.assertTrue(SV.validate_neighbors('p', ')', None)[0])
+
+        # basic valid cases
+        with self.subTest():
+            self.assertTrue(SV.validate_neighbors('p', '+', 'q')[0])
+        with self.subTest():
+            self.assertTrue(SV.validate_neighbors('p', '*', 'q')[0])
+        with self.subTest():            
+            self.assertTrue(SV.validate_neighbors('p', '>', 'q')[0]))
+        with self.subTest():
+            self.assertTrue(SV.validate_neighbors('p', '=', 'q')[0])
+        with self.subTest():
+            self.assertTrue(SV.validate_neighbors('~', 'p', '+')[0])
+        with self.subTest():
+            self.assertTrue(SV.validate_neighbors('(', 'p', ')')[0])
+
+            
     def test_has_invalid_chars(self):
         with self.subTest():
             self.assertEqual(SV.contains_invalid_chars('&'), '&')

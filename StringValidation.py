@@ -43,10 +43,10 @@ invalid_following_var = ('(', '~', 'true', 'false', 'VAR')
 
 
 def standardize_string(expression):
-    """
+    '''
     Converts all symbols to uniform version (*+>=~) ensures spacing around
     words and operators
-    """
+    '''
     expression = expression.lower()
 
     for replacement in replacements:
@@ -56,6 +56,12 @@ def standardize_string(expression):
 
 
 def has_invalid_chars(expression):
+    '''
+    Ensures that only accepted characters are allowed in the string.
+
+    Return: The first invalid character matched if the string is invalid.
+       If the string is valid, None is returned
+    '''
     match = re.match('[^0-9a-zA-Z \~\+\*\(\)=]', expression)
     if match is not None:
         return match.group(0)
@@ -76,8 +82,18 @@ def var_to_placeholder(string):
 
 
 def validate_neighbors(preceeding, current, following):
+    '''
+    Validates that the symbols passed are allowed to occur in that order 
+    (ie, is "AND OR p" valid [no], is "p and q" valid [yes])
+    
+    return (True, 'Valid') if valid, and (False, ERROR_STRING) if invalid.
+    '''
     invalid_preceeding = ()
     invalid_following = ()
+
+    preceeding = var_to_placeholder(preceeding)
+    current = var_to_placeholder(current)
+    following = var_to_placeholder(following)
 
     # determine what to use based on what we are looking at
     if current in binary_operators:
@@ -95,6 +111,8 @@ def validate_neighbors(preceeding, current, following):
     elif current == 'VAR':
         invalid_preceeding = invalid_preceeding_var
         invalid_following = invalid_following_var
+    elif current is None:
+        return (False, 'None is not valid in an expression')
     else:
         #  how did we get here?
         raise Exception('Non valid symbol "{}" given to  \
