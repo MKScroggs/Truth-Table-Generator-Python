@@ -41,7 +41,7 @@ invalid_following_close = ('(', '!', 'true', 'false', 'VAR')
 invalid_preceeding_var = (')', 'true', 'false', 'VAR', None)
 invalid_following_var = ('(', '~', 'true', 'false', 'VAR')
 
-test
+
 def standardize_string(expression):
     """
     Converts all symbols to uniform version (*+>=~) ensures spacing around
