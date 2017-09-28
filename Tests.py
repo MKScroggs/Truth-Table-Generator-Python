@@ -26,11 +26,11 @@ class ControllerTests(unittest.TestCase):
         with self.subTest():
             self.assertIsNone(SV.var_to_placeholder(None))
         with self.subTest():
-            self.assertEqual(SV.var_to_placeholder('p'), 'p')
+            self.assertEqual(SV.var_to_placeholder('p'), 'VAR')
         with self.subTest():
-            self.assertEqual(SV.var_to_placeholder('q'), 'q')
+            self.assertEqual(SV.var_to_placeholder('q'), 'VAR')
         with self.subTest():
-            self.assertEqual(SV.var_to_placeholder('andorvar'), 'andorvar')
+            self.assertEqual(SV.var_to_placeholder('andorvar'), 'VAR')
 
     def test_validate_neighbors(self):
         # cases with none
@@ -38,6 +38,8 @@ class ControllerTests(unittest.TestCase):
             self.assertTrue(SV.validate_neighbors(None, 'p', '+')[0])
         with self.subTest():
             self.assertTrue(SV.validate_neighbors(None, '~', 'p')[0])
+        with self.subTest():
+            self.assertTrue(SV.validate_neighbors(None, '~', '(')[0])
         with self.subTest():
             self.assertTrue(SV.validate_neighbors(None, '(', 'p')[0])
         with self.subTest():
@@ -52,8 +54,8 @@ class ControllerTests(unittest.TestCase):
             self.assertTrue(SV.validate_neighbors('p', '+', 'q')[0])
         with self.subTest():
             self.assertTrue(SV.validate_neighbors('p', '*', 'q')[0])
-        with self.subTest():            
-            self.assertTrue(SV.validate_neighbors('p', '>', 'q')[0]))
+        with self.subTest():
+            self.assertTrue(SV.validate_neighbors('p', '>', 'q')[0])
         with self.subTest():
             self.assertTrue(SV.validate_neighbors('p', '=', 'q')[0])
         with self.subTest():
@@ -61,22 +63,58 @@ class ControllerTests(unittest.TestCase):
         with self.subTest():
             self.assertTrue(SV.validate_neighbors('(', 'p', ')')[0])
 
-            
+        # double negation is valid
+        with self.subTest():
+            self.assertTrue(SV.validate_neighbors('~', '~', 'p')[0])
+
+        # invalid cases
+        # double vars
+        with self.subTest():
+            self.assertFalse(SV.validate_neighbors('p', 'q', '+')[0])
+        with self.subTest():
+            self.assertFalse(SV.validate_neighbors('+', 'p', 'q')[0])
+
+        # double binary ops
+        with self.subTest():
+            self.assertFalse(SV.validate_neighbors('+', '>', 'q')[0])
+        with self.subTest():
+            self.assertFalse(SV.validate_neighbors('p', '=', '+')[0])
+
+        # invalid parens
+        with self.subTest():
+            self.assertFalse(SV.validate_neighbors(')', '(', 'p')[0])
+        with self.subTest():  # empty parens is bad
+            self.assertFalse(SV.validate_neighbors('(', ')', 'p')[0])
+        with self.subTest():
+            self.assertFalse(SV.validate_neighbors('p', '(', ')')[0])
+        with self.subTest():
+            self.assertFalse(SV.validate_neighbors('p', ')', '(')[0])
+        with self.subTest():
+            self.assertFalse(SV.validate_neighbors(')', '~', 'p')[0])
+        with self.subTest():
+            self.assertFalse(SV.validate_neighbors('(', '>', 'p')[0])
+
+        # unlcosed parens
+        with self.subTest():
+            self.assertFalse(SV.validate_neighbors('~', '(', None)[0])
+        with self.subTest():
+            self.assertFalse(SV.validate_neighbors(None, ')', '*')[0])
+
     def test_has_invalid_chars(self):
         with self.subTest():
-            self.assertEqual(SV.contains_invalid_chars('&'), '&')
+            self.assertEqual(SV.has_invalid_chars('&'), '&')
         with self.subTest():
-            self.assertIsNone(SV.contains_invalid_chars('a + b'))
+            self.assertIsNone(SV.has_invalid_chars('a + b'))
         with self.subTest():
-            self.assertIsNone(SV.contains_invalid_chars('a * b'))
+            self.assertIsNone(SV.has_invalid_chars('a * b'))
         with self.subTest():
-            self.assertIsNone(SV.contains_invalid_chars('a > b'))
+            self.assertIsNone(SV.has_invalid_chars('a > b'))
         with self.subTest():
-            self.assertIsNone(SV.contains_invalid_chars('a = b'))
+            self.assertIsNone(SV.has_invalid_chars('a = b'))
         with self.subTest():
-            self.assertIsNone(SV.contains_invalid_chars('~ b'))
+            self.assertIsNone(SV.has_invalid_chars('~ b'))
         with self.subTest():
-            self.assertIsNone(SV.contains_invalid_chars('( b )'))
+            self.assertIsNone(SV.has_invalid_chars('( b )'))
 
     def test_and_replacement(self):
         with self.subTest():

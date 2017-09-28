@@ -32,13 +32,13 @@ unary_operators = ('~')
 
 invalid_preceeding_binary = ('+', '*', '>', '=', '(', None)
 invalid_following_binary = ('+', '*', '>', '=', ')', None)
-invalid_preceeding_unary = (')')
+invalid_preceeding_unary = (')',)  # comma needed to make it a tuple
 invalid_following_unary = ('+', '*', '>', '=', ')', None)
 invalid_preceeding_open = (')', 'true', 'false', 'VAR')
 invalid_following_open = (')', '+', '*', '>', '=', None)
 invalid_preceeding_close = ('(', '+', '*', '>', '=', '~', None)
 invalid_following_close = ('(', '!', 'true', 'false', 'VAR')
-invalid_preceeding_var = (')', 'true', 'false', 'VAR', None)
+invalid_preceeding_var = (')', 'true', 'false', 'VAR')
 invalid_following_var = ('(', '~', 'true', 'false', 'VAR')
 
 
@@ -75,7 +75,7 @@ def var_to_placeholder(string):
     the string is returned. If it is, 'VAR' is returned.
     '''
     non_vars = {'+', '*', '~', '>', '=', '(', ')', 'true', 'false', None}
-    if non_vars.contains(string):
+    if string in non_vars:
         return string
     else:
         return 'VAR'
@@ -83,9 +83,9 @@ def var_to_placeholder(string):
 
 def validate_neighbors(preceeding, current, following):
     '''
-    Validates that the symbols passed are allowed to occur in that order 
+    Validates that the symbols passed are allowed to occur in that order
     (ie, is "AND OR p" valid [no], is "p and q" valid [yes])
-    
+
     return (True, 'Valid') if valid, and (False, ERROR_STRING) if invalid.
     '''
     invalid_preceeding = ()
