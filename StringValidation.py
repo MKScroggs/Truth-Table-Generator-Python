@@ -126,6 +126,26 @@ def validate_neighbors(preceeding, current, following):
         return (True, 'Valid')
 
 
+def validate_parentheses(expression):
+    '''
+    validates that all parentheses are paired properly
+    Returns: (True, 'Valid')  if all parentheses are paired
+             (False, ERROR_STRING) otherwise
+    '''
+    count = 0  # this goes up for each '(' and down for each ')'
+    for i, part in enumerate(expression, 1):
+        if part is '(':
+            count += 1
+        elif part is ')':
+            count -= 1
+            # if it is below 0, there are more closing than opening
+            if count < 0:
+                return (False, 'Unopened ")" at postition {}'.format(i))
+    if count > 0:
+        return (False, '{} unclosed "(" in expression'.format(count))
+    return (True, "Valid")
+
+
 def validate(expression):
     """
     Validates an expression. If the expression is valid, it is formatted and

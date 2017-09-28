@@ -4,6 +4,38 @@ import StringValidation as SV
 
 class ControllerTests(unittest.TestCase):
 
+    def test_validate_parentheses(self):
+        # true cases
+        with self.subTest():
+            self.assertTrue(SV.validate_parentheses(
+                ('(', 'p', ')'))[0])
+        with self.subTest():
+            self.assertTrue(SV.validate_parentheses(
+                ('(', '(', 'p', ')', ')'))[0])
+        with self.subTest():
+            self.assertTrue(SV.validate_parentheses(
+                ('(', 'p', ')', '+', '(', 'q', ')'))[0])
+        with self.subTest():
+            self.assertTrue(SV.validate_parentheses(
+                ('(', '(', 'p', ')', '+', '(', 'q', ')', ')'))[0])
+        with self.subTest():
+            self.assertTrue(SV.validate_parentheses(
+                ('p', '+', 'q'))[0])
+
+        # false cases
+        with self.subTest():
+            self.assertFalse(SV.validate_parentheses(
+                ('(', 'p'))[0])
+        with self.subTest():
+            self.assertFalse(SV.validate_parentheses(
+                ('p', ')'))[0])
+        with self.subTest():
+            self.assertFalse(SV.validate_parentheses(
+                ('(', '(', 'p', ')'))[0])
+        with self.subTest():
+            self.assertFalse(SV.validate_parentheses(
+                ('(', 'p', ')', '+', 'q', ')'))[0])
+
     def test_var_to_placeholder(self):
         with self.subTest():
             self.assertEqual(SV.var_to_placeholder('+'), '+')
