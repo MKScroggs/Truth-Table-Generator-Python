@@ -3,7 +3,7 @@ import os
 from tkinter import Tk, Button, Entry, E, W, N, S, INSERT, PhotoImage, Menu, \
     StringVar, Frame, Canvas, GROOVE, messagebox
 from AutoScrollBar import AutoScrollbar
-import StringValidation as SV
+import ExpressionParser as EP
 program_directory = sys.path[0]
 
 about_info = "Version 0.1 \nAuthor: McAllister Scroggs"
@@ -69,7 +69,7 @@ class TruthTableGeneratorGUI:
         sv = StringVar()
         sv.trace("w", lambda name, index, mode,
                  sv=sv: self.generate_table(False))
-        
+
         self.entry = Entry(root, textvariable=sv)
 
         self.p_button = Button(root, text="p", width=1,
@@ -133,15 +133,18 @@ class TruthTableGeneratorGUI:
         # convert the entered string into a standard format
         expression = self.entry.get()
         print("Expression: {}".format(expression))
+
         # validate that the expression is consistant with the rules
-        valid = SV.validate(expression)  # valid is (True/False, message)
-        if valid[0]:
+        try:
+            expression = EP.format_expression(expression)
+            EP.validate(expression)
             # generate table
-            pass
-        else:
-            if show_message:
-                messagebox.showinfo("Error", valid[1])
-                # make popup
+            # draw table
+        except EP.InvalidExpressionException as ex:
+            messagebox.showinfo('Error', ex.message)
+        except Exception as ex:
+            print('Unexpected exception! Exception message: {}'.format(
+                ex.message))
 
     def draw_table(self):
         # clear the canvas of past tables

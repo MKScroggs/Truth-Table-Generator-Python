@@ -25,10 +25,11 @@ replacements = (
     (r' +', ' '),
     (r'^ +', ''),
     (r' +$', '')
-    )
+)
 
 binary_operators = ('+', '*', '>', '=')
 unary_operators = ('~')
+non_vars = ('+', '*', '~', '>', '=', '(', ')', 'true', 'false', None)
 
 invalid_preceeding_binary = ('+', '*', '>', '=', '(', None)
 invalid_following_binary = ('+', '*', '>', '=', ')', None)
@@ -55,6 +56,18 @@ def standardize_string(expression):
     return expression
 
 
+def format_expression(expression):
+    '''
+    standardizes all characters ('AND'/'and'/'/\' becomes '*') then splits on
+    spaces
+
+    Expression: a string
+    Returns: a tuple of comma seperated parts.
+    '''
+    expression = standardize_string(expression)
+    return expression.split()
+
+
 def has_invalid_chars(expression):
     '''
     Ensures that only accepted characters are allowed in the string.
@@ -74,7 +87,6 @@ def var_to_placeholder(string):
     Takes an input string and determines if it is a variable or not. If not,
     the string is returned. If it is, 'VAR' is returned.
     '''
-    non_vars = {'+', '*', '~', '>', '=', '(', ')', 'true', 'false', None}
     if string in non_vars:
         return string
     else:
@@ -146,41 +158,68 @@ def validate_parentheses(expression):
     return (True, "Valid")
 
 
-def format_expression(expression):
-    '''
-    standardizes all characters ('AND'/'and'/'/\' becomes '*') then splits on
-    spaces
-
-    Expression: a string
-    Returns: a tuple of comma seperated parts.
-    '''
-    expression = standardize_string(expression)
-    return expression.split()
-
-
 def validate(expression):
     '''
-    Validates an expression. If the expression is valid, it is formatted and
-    returned as a list of parts.
-    If invalid a message detailing the error is returned for dispay.
-
+    Validates an expression. Any errors are raised as exceptions
     Args:
-    param1(string): the expression to validate
-
-    Returns: either (True, tuple(strings)) or (False, message)
-    bool: is the expression valid
-    message(string): reason for invalidation
+    param1(string): the expression to validate. This expression should be
+    pre-formated
     '''
-    try:
-        # ensure all parts are allowed (no invalid chars)
-        contains_invalid_chars = has_invalid_chars(expression)
-        if contains_invalid_chars is not None:
-            raise InvalidExpressionException('Invalid character: {}'.format(
-                contains_invalid_chars))
+    # ensure all parts are allowed (no invalid chars)
+    contains_invalid_chars = has_invalid_chars(expression)
+    if contains_invalid_chars is not None:
+        raise InvalidExpressionException('Invalid character: {}'.format(
+            contains_invalid_chars))
+
+    # validate neighbors
+    # validate first character
+    for i, current in enumerate(expression):
+        # get the previous and next element
+        previous = []
+        # if i = 0, preceeding should be None
+        if i < 0:
+            previous = None
+        else:
+            previous = expression[i - 1]
+        following = []
+        if i > len(expression):
+            following = None
+        else:
+            following = expression[i + 1]
+
+        valid = validate_neighbors(previous, current, following)
+        if valid[0] is False:
+            raise InvalidExpressionException('Invalid neighbors: {}'.format(
+                valid[1]))
+
+    # validate parentheses
+    valid = validate_parentheses(expression)
+    if valid[0] is False:
+        raise InvalidExpressionException('Invalid parentheses: {}'.format(
+            valid[1]))
+
+    # a valid expression returns nothing, an invalid expression raises errors
+    return None
 
 
-    except:
-        pass
-    return (False, "unimplnted")
+def get_unique_variables(expression):
+    '''
+    returns a list of the unique variables in the expression.
+    '''
+    variables = []
+    [variables.append(element) for element in expression if
+     element not in variables and
+     element not in non_vars]
+    return variables
 
 
+def generate_table(expression):
+    '''
+    Takes a valid expression and generates a 2d collection that represents
+    the truth table
+    param1(list of strings): the validated expression
+    return: 2d list of the truth table. First row is the header, and
+    subsequent rows are the table rows.
+    '''
+    # get the unique variables in the expression:
+    variables = get_unique_variables(expression)

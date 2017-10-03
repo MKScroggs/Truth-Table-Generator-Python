@@ -25,7 +25,7 @@ replacements = (
     (r' +', ' '),
     (r'^ +', ''),
     (r' +$', '')
-    )
+)
 
 binary_operators = ('+', '*', '>', '=')
 unary_operators = ('~')
@@ -160,27 +160,14 @@ def format_expression(expression):
 
 def validate(expression):
     '''
-    Validates an expression. If the expression is valid, it is formatted and
-    returned as a list of parts.
-    If invalid a message detailing the error is returned for dispay.
-
+    Validates an expression. Any errors are raised as exceptions
     Args:
     param1(string): the expression to validate
-
-    Returns: either (True, tuple(strings)) or (False, message)
-    bool: is the expression valid
-    message(string): reason for invalidation
     '''
-    try:
-        # ensure all parts are allowed (no invalid chars)
-        contains_invalid_chars = has_invalid_chars(expression)
-        if contains_invalid_chars is not None:
-            raise InvalidExpressionException('Invalid character: {}'.format(
-                contains_invalid_chars))
+    # ensure all parts are allowed (no invalid chars)
+    contains_invalid_chars = has_invalid_chars(expression)
+    if contains_invalid_chars is not None:
+        raise InvalidExpressionException('Invalid character: {}'.format(
+            contains_invalid_chars))
 
-
-    except:
-        pass
     return (False, "unimplnted")
-
-
