@@ -142,7 +142,7 @@ class TruthTableGeneratorGUI:
             # draw table
         except EP.InvalidExpressionException as ex:
             if show_message:
-                messagebox.showinfo('Error', ex)
+                messagebox.showinfo('Error', e)
         except Exception as ex:
             print('Unexpected exception! Exception message: {}'.format(
                 ex.message))

@@ -1,0 +1,30 @@
+
+class ExpressionTree():
+    """
+    Its a binary tree! Has normal left and right children as well a data store.
+    """
+
+    def __init__(self):
+        self.left = None
+        self.right = None
+        self.data = None
+
+    def BuildTree(self, expression):
+        """
+        Builds a tree by repeatedly spliting the expression. The tree splits on
+        the last operation to be completed following the standard order of
+        operations:
+            Parentheses, Not, And, Or, Implies, If and Only If
+        The result is a tree with the leaves as the variables and the branches
+        as the operations
+        """
+        # find the last operation in order of operations.
+        for i, symbol in reversed(enumerate(expression)):
+            pass
+        pass
+
+    def _AddBinaryChildren(self, left, right, operator):
+        pass
+
+    def _AddUnaryChild(self, right, operator='~'):
+        pass
