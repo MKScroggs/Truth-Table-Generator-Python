@@ -1,26 +1,73 @@
 import unittest
 import ExpressionParser as EP
+import ExpressionTree as ET
 
 
 class ControllerTests(unittest.TestCase):
 
+    def test_get_paren_map(self):
+        # no parens
+        with self.subTest():
+            self.assertEqual(ET.get_paren_map(
+                ('a', '*', 'b')),
+                [0, 0, 0])
+        # ending with parens
+        with self.subTest():
+            self.assertEqual(ET.get_paren_map(
+                ('a', '*', '(', 'b', ')')),
+                [0, 0, 1, 1, 1])
+        # starting with parens
+        with self.subTest():
+            self.assertEqual(ET.get_paren_map(
+                ('(', 'a', ')', '*', 'b')),
+                [1, 1, 1, 0, 0])
+        # parens in middle
+        with self.subTest():
+            self.assertEqual(ET.get_paren_map(
+                ('~', '(', 'a', ')', '*')),
+                [0, 1, 1, 1, 0])
+        # two sets of parens
+        with self.subTest():
+            self.assertEqual(ET.get_paren_map(
+                ('(', 'a', ')', '+', '(', 'a', ')')),
+                [1, 1, 1, 0, 1, 1, 1])
+        # nested parend
+        with self.subTest():
+            self.assertEqual(ET.get_paren_map(
+                ('(', '(', 'a', ')', ')')),
+                [1, 2, 2, 2, 1])
+        # deep parens
+        with self.subTest():
+            self.assertEqual(ET.get_paren_map(
+                ('(', '(', '(', '(', 'a', ')', ')', ')', ')')),
+                [1, 2, 3, 4, 4, 4, 3, 2, 1])
+        # complex
+        with self.subTest():
+            self.assertEqual(ET.get_paren_map(
+                ('(', 'a', '+', 'b', ')', '+',
+                 '(', '~', '(', 'a', '*', 'b', ')', ')')),
+                [1, 1, 1, 1, 1, 0, 1, 1, 2, 2, 2, 2, 2, 1])
+
     def test_get_unique_variables(self):
         # basic case
         with self.subTest():
-            self.assertEqual(EP.get_unique_variables(('p', '+', 'q')),
-                             ['p', 'q'])
+            self.assertEqual(EP.get_unique_variables(
+                ('p', '+', 'q')),
+                ['p', 'q'])
         # with repetition
         with self.subTest():
-            self.assertEqual(EP.get_unique_variables(('p', '+', '~', 'p')),
-                             ['p'])
+            self.assertEqual(EP.get_unique_variables(
+                ('p', '+', '~', 'p')),
+                ['p'])
         with self.subTest():
             self.assertEqual(EP.get_unique_variables(
                 ('p', '+', 'q', '*', 'p')),
                 ['p', 'q'])
         # with only constants
         with self.subTest():
-            self.assertEqual(EP.get_unique_variables(('false', '+', 'true')),
-                             [])
+            self.assertEqual(EP.get_unique_variables(
+                ('false', '+', 'true')),
+                [])
         # complex expression
         with self.subTest():
             self.assertEqual(EP.get_unique_variables(
@@ -29,8 +76,9 @@ class ControllerTests(unittest.TestCase):
                 ['p', 'q', 'r', 's', 't', 'u'])
         # mulitchar variables
         with self.subTest():
-            self.assertEqual(EP.get_unique_variables(('first', '+', 'last')),
-                             ['first', 'last'])
+            self.assertEqual(EP.get_unique_variables(
+                ('first', '+', 'last')),
+                ['first', 'last'])
 
     def test_validate_parentheses(self):
         # true cases
