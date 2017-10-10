@@ -25,7 +25,7 @@ def find_next_split(list_, paren_map):
         return -2
     # this is backwards by intent! We are looking for the least
     # operand first.
-    order_of_operations = ('=', '>', '+', '*', '!')
+    order_of_operations = ('=', '>', '+', '*', '~')
 
     # determine if the entire expression is in a parenthetical
     # enclosure
@@ -129,8 +129,8 @@ class ExpressionTree:
         else:
             operator = expression[next_split]
             self.value = operator
-            if expression[operator] in EP.unary_operators:
-                self._AddUnaryChild(expression, paren_map, next_split)
+            if operator in EP.unary_operators:
+                self._AddUnaryChild(expression, paren_map)
             else:
                 self._AddBinaryChildren(expression, paren_map, next_split)
 
@@ -156,29 +156,47 @@ class ExpressionTree:
         builds the right child and adds it to the current node
         '''
         # this should be safe as no expression can end in a binary operator
-        expression = (expression[:1])
-        paren_map = (paren_map[:1])
-
+        expression = (expression[1:])
+        paren_map = (paren_map[1:])
         # build the child
         right_child = ExpressionTree()
         right_child.BuildTree(expression, paren_map)
         self.right = right_child
 
-    def _addParenChild(self, expression, paren_map):
+    def _AddParenChild(self, expression, paren_map):
         '''
         Builds the child of a paren node. Child is stored on the right branch
         '''
         # remove parens
         expression = expression[1:-1]
         paren_map = paren_map[1:-1]
-
+        paren_map = [i - 1 for i in paren_map]
+        # print(paren_map)
         # build the right child
         right_child = ExpressionTree()
         self.right = right_child
         right_child.BuildTree(expression, paren_map)
 
+    def InfixTraverse(self):
+        '''
+        Does a left right infix traversal of the tree. This is generates the 
+        expression as entered
+        '''
+
+        if self.is_leaf is True:
+            return [self.value]
+        else:
+            if self.value == '()':
+                return ['('] + self.right.InfixTraverse() + [')']
+            elif self.left is None:  # this handles unary operators
+                return [self.value] + self.right.InfixTraverse()
+            else:
+                return self.left.InfixTraverse() \
+                    + [self.value] \
+                    + self.right.InfixTraverse()
+
 
 if __name__ == "__main__":
-    print(find_next_split(('a', '+', 'b', '*', 'c')))
-    print(find_next_split(('a', '*', 'b', '+', 'c')))
-    print(find_next_split(('a', '*', 'b', '*', 'c')))
+    test = ExpressionTree()
+    test.BuildTree(('p', '+', 'q'))
+    print(test.InfixTraverse())

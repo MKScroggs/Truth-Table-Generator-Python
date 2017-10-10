@@ -5,6 +5,121 @@ import ExpressionTree as ET
 
 class ControllerTests(unittest.TestCase):
 
+    def test_expression_tree_infix(self):
+        # this tests both tree genereation and infix traversal
+
+        # tests all operators
+        with self.subTest():
+            exp = ['~', 'a', '+', 'b', '*', 'c', '>', 'd', '=', 'e']
+            tree = ET.ExpressionTree()
+            tree.BuildTree(exp)
+            self.assertEqual(tree.InfixTraverse(), exp)
+        # it should work in reverse order too
+        with self.subTest():
+            exp = ['a', '=', 'b', '>', 'c', '*', 'd', '+', '~', 'e']
+            tree = ET.ExpressionTree()
+            tree.BuildTree(exp)
+            self.assertEqual(tree.InfixTraverse(), exp)
+        # multiple parentheses groups
+        with self.subTest():
+            exp = ['(', 'a', '+', 'b', ')', '>', '~', '(', 'a', '*', 'b', ')']
+            tree = ET.ExpressionTree()
+            tree.BuildTree(exp)
+            self.assertEqual(tree.InfixTraverse(), exp)
+        # nested parentheses
+        with self.subTest():
+            exp = ['a', '=', '(', '(', 'a', ')', '>', 'b', ')', '*', 'b']
+            tree = ET.ExpressionTree()
+            tree.BuildTree(exp)
+            self.assertEqual(tree.InfixTraverse(), exp)
+        # entire expression in parentheses (why?)
+        with self.subTest():
+            exp = ['(', '~', '(', '(', 'a', ')', '>', 'b', ')', '*', 'b', ')']
+            tree = ET.ExpressionTree()
+            tree.BuildTree(exp)
+            self.assertEqual(tree.InfixTraverse(), exp)
+
+    def test_find_next_split(self):
+        # test iff and if
+        with self.subTest():
+            exp = ('a', '>', 'b', '=', 'c')
+            paren_map = ET.get_paren_map(exp)
+            self.assertEqual(ET.find_next_split(
+                exp, paren_map),
+                3)
+        # test if and or
+        with self.subTest():
+            exp = ('a', '>', 'b', '+', 'c')
+            paren_map = ET.get_paren_map(exp)
+            self.assertEqual(ET.find_next_split(
+                exp, paren_map),
+                1)
+        # test or and and
+        with self.subTest():
+            exp = ('a', '+', 'b', '*', 'c')
+            paren_map = ET.get_paren_map(exp)
+            self.assertEqual(ET.find_next_split(
+                exp, paren_map),
+                1)
+        # test order changing or and and
+        with self.subTest():
+            exp = ('a', '+', 'b', '*', 'c')
+            paren_map = ET.get_paren_map(exp)
+            self.assertEqual(ET.find_next_split(
+                exp, paren_map),
+                1)
+        # test and and not
+        with self.subTest():
+            exp = ('~', 'b', '*', 'c')
+            paren_map = ET.get_paren_map(exp)
+            self.assertEqual(ET.find_next_split(
+                exp, paren_map),
+                2)
+        # test simple parentheses
+        with self.subTest():
+            exp = ('~', '(', '~', 'b', ')')
+            paren_map = ET.get_paren_map(exp)
+            self.assertEqual(ET.find_next_split(
+                exp, paren_map),
+                0)
+        # test multiple parentheses
+        with self.subTest():
+            exp = ('(', 'b', ')', '+', '(', 'a', ')')
+            paren_map = ET.get_paren_map(exp)
+            self.assertEqual(ET.find_next_split(
+                exp, paren_map),
+                3)
+        # test surrounded in parentheses
+        with self.subTest():
+            exp = ('(', '~', 'b', ')')
+            paren_map = ET.get_paren_map(exp)
+            self.assertEqual(ET.find_next_split(
+                exp, paren_map),
+                -1)
+        # test leaf node
+        with self.subTest():
+            exp = ('b')
+            paren_map = ET.get_paren_map(exp)
+            self.assertEqual(ET.find_next_split(
+                exp, paren_map),
+                -2)
+        # test duplicate operators
+        # test order changing
+        with self.subTest():
+            exp = ('a', '+', 'b', '+', 'c')
+            paren_map = ET.get_paren_map(exp)
+            self.assertEqual(ET.find_next_split(
+                exp, paren_map),
+                3)
+        # test error case, no operators
+
+        # test order changing
+        with self.subTest():
+            exp = ('a', 'a')
+            paren_map = ET.get_paren_map(exp)
+            with self.assertRaises(ET.BadSplitException):
+                ET.find_next_split(exp, paren_map)
+
     def test_get_paren_map(self):
         # no parens
         with self.subTest():
